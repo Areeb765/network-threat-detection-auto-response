@@ -1,9 +1,11 @@
-# Network Threat Detection & Auto-Response Tool
-# Project currently in development
+from scapy.all import sniff
+
+def process_packet(packet):
+    print(packet.summary())
 
 def main():
-    print("Network Threat Detection Tool")
-    print("Project is currently in development.")
+    print("Starting network monitor...")
+    sniff(prn=process_packet, store=False)
 
 if __name__ == "__main__":
     main()
