@@ -3,6 +3,8 @@ from scapy.all import sniff
 def process_packet(packet):
     if packet.haslayer("IP"):
         print("Source IP:", packet["IP"].src)
+        print("Destination IP:", packet["IP"].dst)
+        print("--------------------")
 
 def main():
     print("Starting network monitor...")
