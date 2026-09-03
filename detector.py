@@ -1,9 +1,17 @@
-from scapy.all import sniff
+from scapy.all import sniff, TCP, UDP
 
 def process_packet(packet):
     if packet.haslayer("IP"):
         print("Source IP:", packet["IP"].src)
         print("Destination IP:", packet["IP"].dst)
+
+        if packet.haslayer(TCP):
+            print("Protocol: TCP")
+        elif packet.haslayer(UDP):
+            print("Protocol: UDP")
+        else:
+            print("Protocol: Other")
+
         print("--------------------")
 
 def main():
