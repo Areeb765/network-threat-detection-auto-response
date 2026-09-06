@@ -1,9 +1,18 @@
 from scapy.all import sniff, TCP, UDP
+packet_counts = {}
 
 def process_packet(packet):
     if packet.haslayer("IP"):
-        print("Source IP:", packet["IP"].src)
-        print("Destination IP:", packet["IP"].dst)
+        source_ip = packet["IP"].src
+        destination_ip = packet["IP"].dst
+
+        if source_ip in packet_counts:
+            packet_counts[source_ip] += 1
+        else:
+            packet_counts[source_ip] = 1
+
+        print("Source IP:", source_ip)
+        print("Destination IP:", destination_ip)
 
         if packet.haslayer(TCP):
             print("Protocol: TCP")
@@ -18,6 +27,7 @@ def process_packet(packet):
         else:
             print("Protocol: Other")
 
+        print("Packets seen from this IP:", packet_counts[source_ip])
         print("--------------------")
 
 def main():
