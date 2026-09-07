@@ -3,6 +3,8 @@ from scapy.all import sniff, TCP, UDP
 packet_counts = {}
 ports_seen = {}
 
+PORT_SCAN_THRESHOLD = 5
+
 def process_packet(packet):
 
     if packet.haslayer("IP"):
@@ -22,24 +24,32 @@ def process_packet(packet):
         print("Destination IP:", destination_ip)
 
         if packet.haslayer(TCP):
+            destination_port = packet[TCP].dport
+
             print("Protocol: TCP")
             print("Source Port:", packet[TCP].sport)
-            print("Destination Port:", packet[TCP].dport)
+            print("Destination Port:", destination_port)
 
-            ports_seen[source_ip].add(packet[TCP].dport)
+            ports_seen[source_ip].add(destination_port)
 
         elif packet.haslayer(UDP):
+            destination_port = packet[UDP].dport
+
             print("Protocol: UDP")
             print("Source Port:", packet[UDP].sport)
-            print("Destination Port:", packet[UDP].dport)
+            print("Destination Port:", destination_port)
 
-            ports_seen[source_ip].add(packet[UDP].dport)
+            ports_seen[source_ip].add(destination_port)
 
         else:
             print("Protocol: Other")
 
         print("Packets seen from this IP:", packet_counts[source_ip])
         print("Destination ports seen from this IP:", ports_seen[source_ip])
+
+        if len(ports_seen[source_ip]) >= PORT_SCAN_THRESHOLD:
+            print("WARNING: Possible port scan detected from", source_ip)
+
         print("--------------------")
 
 def main():
