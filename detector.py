@@ -1,9 +1,20 @@
 from scapy.all import sniff, TCP, UDP
+from datetime import datetime
 
 packet_counts = {}
 ports_seen = {}
 
 PORT_SCAN_THRESHOLD = 5
+
+
+def log_threat(source_ip, threat_type):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    with open("logs/threats.log", "a") as log_file:
+        log_file.write(
+            f"[{timestamp}] {threat_type} | Source IP: {source_ip}\n"
+        )
+
 
 def process_packet(packet):
 
@@ -49,14 +60,17 @@ def process_packet(packet):
 
         if len(ports_seen[source_ip]) >= PORT_SCAN_THRESHOLD:
             print("WARNING: Possible port scan detected from", source_ip)
+            log_threat(source_ip, "Possible Port Scan")
 
         print("--------------------")
+
 
 def main():
 
     print("Starting network monitor...")
 
     sniff(prn=process_packet, store=False, count=10)
+
 
 if __name__ == "__main__":
 
