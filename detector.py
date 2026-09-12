@@ -3,6 +3,7 @@ from datetime import datetime
 
 packet_counts = {}
 ports_seen = {}
+alerted_ips = set()
 
 PORT_SCAN_THRESHOLD = 5
 
@@ -58,9 +59,13 @@ def process_packet(packet):
         print("Packets seen from this IP:", packet_counts[source_ip])
         print("Destination ports seen from this IP:", ports_seen[source_ip])
 
-        if len(ports_seen[source_ip]) >= PORT_SCAN_THRESHOLD:
+        if (
+            len(ports_seen[source_ip]) >= PORT_SCAN_THRESHOLD
+            and source_ip not in alerted_ips
+        ):
             print("WARNING: Possible port scan detected from", source_ip)
             log_threat(source_ip, "Possible Port Scan")
+            alerted_ips.add(source_ip)
 
         print("--------------------")
 
